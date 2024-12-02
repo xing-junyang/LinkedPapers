@@ -12,16 +12,16 @@ const userName = ref("用户")
 const isVIP = ref(false)
 
 onMounted(() => {
-	hasLogin.value = sessionStorage.getItem('token') !== '';
-	if (hasLogin.value) {
+	hasLogin.value = sessionStorage.getItem('token') !== null && sessionStorage.getItem('token') !== '';
+	if (hasLogin.value && sessionStorage.getItem('userInfo')!== null) {
 		userName.value = JSON.parse(sessionStorage.getItem('userInfo')).username
 		isVIP.value = JSON.parse(sessionStorage.getItem('userInfo')).role === 'VIP'
 	}
 })
 
 watch(useRoute(), () => {
-	hasLogin.value = sessionStorage.getItem('token') !== '';
-	if (hasLogin.value) {
+	hasLogin.value = sessionStorage.getItem('token') !== null && sessionStorage.getItem('token') !== '';
+	if (hasLogin.value && sessionStorage.getItem('userInfo')!==null) {
 		userName.value = JSON.parse(sessionStorage.getItem('userInfo')).username
 		isVIP.value = JSON.parse(sessionStorage.getItem('userInfo')).role === 'VIP'
 	}
@@ -51,7 +51,7 @@ function handleLogout() {
 <template>
 	<el-header class="header" height="60px">
 		<el-row :gutter="10">
-			<el-col :span="4" class="header-left">
+			<el-col :span="6" class="header-left">
 				<router-link to="/" v-slot="{navigate}">
 					<h1 class="title" @click="navigate">
 						Linked Papers
@@ -59,7 +59,7 @@ function handleLogout() {
 					</h1>
 				</router-link>
 			</el-col>
-			<el-col :span="4">
+			<el-col :span="2">
 			</el-col>
 			<el-col :span="16" class="header-right" style="justify-content: end">
 				<router-link to="/login" v-slot="{navigate}" v-if="!hasLogin">

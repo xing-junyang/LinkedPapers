@@ -62,9 +62,11 @@ router.beforeEach((to, _, next) => {
             next()
         }
     } else {
-        if (to.path === '/login') {
-            next();
-        } else if (to.path === '/register') {
+        if (to.path === '/user') {
+            next('/login')
+        }else if (to.path === '/paperSuggest') {
+            next('/login')
+        } else {
             next()
         }
     }
