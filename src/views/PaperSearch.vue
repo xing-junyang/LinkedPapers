@@ -1,7 +1,7 @@
 <template>
-	<div class="paper-search-container">
+	<div class="paper-search-container" :class="{ 'has-results': hasSearched }">
 		<!-- 搜索区域 -->
-		<el-card class="search-card">
+		<el-card class="search-card" :class="{ 'search-card-top': hasSearched }">
 			<el-form :model="searchForm" @submit.prevent="handleSearch">
 				<el-row :gutter="20">
 					<el-col :span="6"></el-col>
@@ -63,7 +63,7 @@
 		</el-card>
 
 		<!-- 搜索结果列表 -->
-		<el-card v-if="papers.length > 0" class="result-card">
+		<el-card v-if="papers.length > 0" class="result-card" :class="{ 'result-card-show': hasSearched }">
 			<div class="search-stats">
 				找到 {{ total }} 条结果
 			</div>
@@ -106,6 +106,7 @@
 			v-else-if="hasSearched"
 			description="未找到相关论文"
 			class="result-empty"
+			:class="{ 'result-empty-show': hasSearched }"
 		/>
 	</div>
 </template>
@@ -171,6 +172,36 @@ const handleSearch = async () => {
 	} finally {
 		loading.value = false
 	}
+
+	//TODO: the following is the Mock data, which should be replaced after the backend is implemented.
+	hasSearched.value = true
+	papers.value = [
+		{
+			paperId: '1',
+			title: '论文标题1',
+			year: '2021',
+			category: '计算机科学',
+			abstract: '论文摘要1',
+			citationCount: 10
+		},
+		{
+			paperId: '2',
+			title: '论文标题2',
+			year: '2020',
+			category: '人工智能',
+			abstract: '论文摘要2',
+			citationCount: 20
+		},
+		{
+			paperId: '3',
+			title: '论文标题3',
+			year: '2019',
+			category: '机器学习',
+			abstract: '论文摘要3',
+			citationCount: 30
+		}
+	]
+	total.value = 3
 }
 
 const handleSizeChange = (size: number) => {
@@ -187,19 +218,47 @@ const handleCurrentChange = (page: number) => {
 
 <style scoped>
 .paper-search-container {
-	padding: 20px;
-	max-width: 1600px;
-	width: 80%;
-	margin: 0 auto;
+	min-height: 80vh;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	justify-content: center;
+}
+.paper-search-container.has-results {
+	justify-content: flex-start;
+	padding-top: 20px;
 }
 
 .search-card {
-	margin-bottom: 20px;
+	margin: auto;
+	width: 100%;
+	max-width: 800px;
+	transition: all 0.5s ease;
+	position: relative;
+	z-index: 2;
+}
+.search-card.search-card-top {
+	margin: 20px auto;
+	transform: translateY(0);
 }
 
-.result-card {
-	margin-top: 20px;
+.result-card,
+.result-empty {
+	opacity: 0;
+	transform: translateY(20px);
+	transition: all 0.5s ease;
+	transition-delay: 0.2s;
+	margin: 20px auto;
+	width: 100%;
+	max-width: 800px;
 }
+
+.result-card.result-card-show,
+.result-empty.result-empty-show {
+	opacity: 1;
+	transform: translateY(0);
+}
+
 
 .search-stats {
 	color: #606266;
@@ -215,8 +274,14 @@ const handleCurrentChange = (page: number) => {
 	border-bottom: 1px solid #EBEEF5;
 }
 
+.paper-item:first-child {
+	border-top: none;
+	padding-top: 0;
+}
+
 .paper-item:last-child {
 	border-bottom: none;
+	padding-bottom: 0;
 }
 
 .paper-title {
@@ -257,10 +322,6 @@ const handleCurrentChange = (page: number) => {
 .pagination {
 	margin-top: 20px;
 	text-align: center;
-}
-
-.result-empty {
-	margin-top: 40px;
 }
 
 .year, .citations {

@@ -30,7 +30,7 @@
 								:width="40"
 							>
 								<template #default="{ percentage }">
-									<span class="percentage-value">{{ percentage }}%</span>
+									<span class="percentage-value">{{ percentage }}</span>
 								</template>
 							</el-progress>
 						</div>
@@ -84,7 +84,9 @@ const loading = ref(false)
 const recommendations = ref<RecommendedPaper[]>([])
 
 const getSimilarityColor = (percentage: number) => {
-	if (percentage < 60) return '#909399'
+	if (percentage < 20) return '#620000'
+	if (percentage < 40) return '#F56C6C'
+	if (percentage < 60) return '#ff8000'
 	if (percentage < 80) return '#E6A23C'
 	return '#67C23A'
 }
@@ -103,6 +105,65 @@ const loadRecommendations = async () => {
 	} finally {
 		loading.value = false
 	}
+	//TODO: the following is the Mock data, which should be replaced after the backend is implemented.
+	recommendations.value = [
+		{
+			paperId: '1',
+			title: '论文标题1',
+			abstract: '论文摘要1',
+			similarity: 0.8,
+			reason: '推荐理由1'
+		},
+		{
+			paperId: '2',
+			title: '论文标题2',
+			abstract: '论文摘要2',
+			similarity: 0.7,
+			reason: '推荐理由2'
+		},
+		{
+			paperId: '3',
+			title: '论文标题3',
+			abstract: '论文摘要3',
+			similarity: 0.6,
+			reason: '推荐理由3'
+		},
+		{
+			paperId: '4',
+			title: '论文标题4',
+			abstract: '论文摘要4',
+			similarity: 0.5,
+			reason: '推荐理由4'
+		},
+		{
+			paperId: '5',
+			title: '论文标题5',
+			abstract: '论文摘要5',
+			similarity: 0.4,
+			reason: '推荐理由5'
+		},
+		{
+			paperId: '6',
+			title: '论文标题6',
+			abstract: '论文摘要6',
+			similarity: 0.3,
+			reason: '推荐理由6'
+		},
+		{
+			paperId: '7',
+			title: '论文标题7',
+			abstract: '论文摘要7',
+			similarity: 0.2,
+			reason: '推荐理由7'
+		},
+		{
+			paperId: '8',
+			title: '论文标题8',
+			abstract: '论文摘要8',
+			similarity: 0.1,
+			reason: '推荐理由8'
+		}
+	]
 }
 
 const refreshRecommendations = () => {
@@ -170,7 +231,10 @@ onMounted(() => {
 
 .percentage-value {
 	font-size: 12px;
-	line-height: 1;
+	//line-height: 1;
+	font-weight: 1000;
+	width: 100%;
+	padding-right: 8px;
 }
 
 .paper-content {

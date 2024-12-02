@@ -42,6 +42,38 @@ interface RecommendationResponse {
     }
 }
 
+export interface PaperDetail {
+    code: number
+    data: {
+        paperId: string
+        title: string
+        abstract: string
+        year: number
+        category: string
+        vector: number[]
+        citations: [
+            {
+                paperId: string
+                title: string
+                year: number
+            }
+        ]
+        similarPapers?: [
+            {
+                paperId: string
+                title: string
+                similarity: number
+            }
+        ]
+        sameCategoryPapers?: [
+            {
+                paperId: string
+                title: string
+            }
+        ]
+    }
+}
+
 export const paperApi = {
     // 搜索论文
     search(params: SearchParams) {
@@ -51,5 +83,10 @@ export const paperApi = {
     // 获取推荐论文
     getRecommendations() {
         return axios.get<RecommendationResponse>('/api/user/recommendations',{headers: {token: sessionStorage.getItem('token')}})
+    },
+
+    // 获取论文详情
+    getPaperDetail(paperId: string) {
+        return axios.get<PaperDetail>(`/api/papers/${paperId}`)
     }
 }
