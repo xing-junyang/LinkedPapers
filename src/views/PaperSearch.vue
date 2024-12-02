@@ -1,7 +1,19 @@
 <template>
+	<!-- Linked Papers Title -->
+	<transition name="fade">
+		<div class="board" v-if="!hasSearched">
+			<div class="title-and-logo">
+				<div class="title">Linked Papers</div>
+				<div class="logo">
+					<el-icon><Search /></el-icon>
+				</div>
+			</div>
+			<div class="slogan">A place to find papers. For You. For free.</div>
+		</div>
+	</transition>
 	<div class="paper-search-container" :class="{ 'has-results': hasSearched }">
 		<!-- 搜索区域 -->
-		<el-card class="search-card" :class="{ 'search-card-top': hasSearched }">
+		<el-card class="search-card">
 			<el-form :model="searchForm" @submit.prevent="handleSearch">
 				<el-row :gutter="20">
 					<el-col :span="6"></el-col>
@@ -63,7 +75,7 @@
 		</el-card>
 
 		<!-- 搜索结果列表 -->
-		<el-card v-if="papers.length > 0" class="result-card" :class="{ 'result-card-show': hasSearched }">
+		<el-card v-if="papers.length > 0" class="result-card">
 			<div class="search-stats">
 				找到 {{ total }} 条结果
 			</div>
@@ -106,7 +118,6 @@
 			v-else-if="hasSearched"
 			description="未找到相关论文"
 			class="result-empty"
-			:class="{ 'result-empty-show': hasSearched }"
 		/>
 	</div>
 </template>
@@ -217,48 +228,83 @@ const handleCurrentChange = (page: number) => {
 </script>
 
 <style scoped>
-.paper-search-container {
-	min-height: 80vh;
+.board{
+	position: fixed;
+	top: 15vh;
 	display: flex;
 	flex-direction: column;
-	position: relative;
 	justify-content: center;
+	align-items: center;
+	padding: 20px;
+	max-width: 1600px;
+	width: 100%;
+	margin: 0 auto;
 }
+
+.title-and-logo{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.slogan{
+	color: #606266;
+	font-size: 18px;
+	font-style: italic;
+}
+
+.fade-enter-active, .fade-leave-active {
+	transition: all 0.6s ease-in-out;
+}
+
+.fade-enter {
+	opacity: 0;
+}
+.fade-leave-to{
+	opacity: 0;
+	transform: translateX(-50vw);
+}
+
+.fade-enter-to{
+	opacity: 1;
+}
+.fade-leave{
+	opacity: 1;
+	transform: translateX(0);
+}
+
+.title{
+	font-size: 40px;
+	color: #2291b9;
+	font-weight: 700;
+	padding-right: 20px;
+}
+
+.logo{
+	font-size: 40px;
+	color: #2291b9;
+}
+
+.paper-search-container {
+	padding: 20px;
+	max-width: 1600px;
+	width: 80%;
+	margin: 0 auto;
+	transition: transform 1.2s ease-in-out;
+	transform: translateY(30vh);
+}
+
 .paper-search-container.has-results {
-	justify-content: flex-start;
-	padding-top: 20px;
+	transform: translateY(0);
 }
 
 .search-card {
-	margin: auto;
-	width: 100%;
-	max-width: 800px;
-	transition: all 0.5s ease;
-	position: relative;
-	z-index: 2;
-}
-.search-card.search-card-top {
-	margin: 20px auto;
-	transform: translateY(0);
+	margin-bottom: 20px;
 }
 
-.result-card,
-.result-empty {
-	opacity: 0;
-	transform: translateY(20px);
-	transition: all 0.5s ease;
-	transition-delay: 0.2s;
-	margin: 20px auto;
-	width: 100%;
-	max-width: 800px;
+.result-card {
+	margin-top: 20px;
 }
-
-.result-card.result-card-show,
-.result-empty.result-empty-show {
-	opacity: 1;
-	transform: translateY(0);
-}
-
 
 .search-stats {
 	color: #606266;

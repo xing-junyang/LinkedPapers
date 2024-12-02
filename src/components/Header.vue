@@ -3,6 +3,7 @@
 import {ElMessageBox} from "element-plus";
 import {useRoute, useRouter} from "vue-router";
 import {onMounted, ref, watch} from "vue";
+import {Search} from "@element-plus/icons-vue";
 
 const router = useRouter()
 
@@ -54,6 +55,7 @@ function handleLogout() {
 				<router-link to="/" v-slot="{navigate}">
 					<h1 class="title" @click="navigate">
 						Linked Papers
+						<el-icon><Search /></el-icon>
 					</h1>
 				</router-link>
 			</el-col>
@@ -146,6 +148,7 @@ function handleLogout() {
 	border-radius: 0.8rem;
 	font-weight: 1000;
 	color: goldenrod;
+	font-style: italic;
 }
 
 .btn {

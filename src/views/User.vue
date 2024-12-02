@@ -160,7 +160,7 @@ const loadUserStore = () => {
 		registerTime: '2021-01-01 00:00:00',
 		lastLoginTime: '2021-01-01 00:00:00',
 		vipExpireTime: '2024-12-31',
-		role: 'VIP'
+		role: 'NORMAL'
 	}
 	isVip.value = userStore.value.role === 'VIP'
 	vipExpireTime.value = userStore.value.vipExpireTime
