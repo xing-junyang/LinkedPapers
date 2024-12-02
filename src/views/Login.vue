@@ -1,0 +1,126 @@
+<template>
+	<div class="login-container">
+		<el-card class="login-card">
+			<h2 class="title">用户登录</h2>
+			<el-form
+				ref="loginFormRef"
+				:model="loginForm"
+				:rules="loginRules"
+				label-width="80px"
+			>
+				<el-form-item label="邮箱" prop="email">
+					<el-input v-model="loginForm.email" placeholder="请输入邮箱" />
+				</el-form-item>
+				<el-form-item label="密码" prop="password">
+					<el-input
+						v-model="loginForm.password"
+						type="password"
+						placeholder="请输入密码"
+						show-password
+					/>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="handleLogin" :loading="loading">
+						登录
+					</el-button>
+				</el-form-item>
+			</el-form>
+			<div class="register-link">
+				还没有账号？<router-link to="/register">立即注册</router-link>
+			</div>
+		</el-card>
+	</div>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import type { FormInstance } from 'element-plus'
+import { userApi } from '@/api/user'
+
+const router = useRouter()
+
+const loginForm = reactive({
+	email: '',
+	password: ''
+})
+
+const loginRules = {
+	email: [
+		{ required: true, message: '请输入邮箱', trigger: 'blur' },
+		{ type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
+	],
+	password: [
+		{ required: true, message: '请输入密码', trigger: 'blur' },
+		{ min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
+	]
+}
+
+const loginFormRef = ref<FormInstance>()
+const loading = ref(false)
+
+const handleLogin = async () => {
+	if (!loginFormRef.value) return
+
+	await loginFormRef.value.validate(async (valid) => {
+		if (valid) {
+			loading.value = true
+			try {
+				const { data: response } = await userApi.login(loginForm)
+				if (response.code === 0) {
+					ElMessage.success('登录成功')
+					localStorage.setItem('token', response.data.token)
+					localStorage.setItem('userInfo', JSON.stringify(response.data.userInfo))
+					// router.push('/') // TODO: 跳转到首页
+				} else {
+					ElMessage.error(response.message)
+				}
+			} catch (error) {
+				ElMessage.error('登录失败，请稍后重试')
+			} finally {
+				loading.value = false
+			}
+		}
+	})
+}
+</script>
+
+<style scoped>
+.login-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	background-color: #f5f7fa;
+}
+
+.login-card {
+	width: 400px;
+}
+
+.title {
+	text-align: center;
+	margin-bottom: 30px;
+	color: #303133;
+}
+
+.el-form-item:last-child {
+	margin-bottom: 0;
+}
+
+.el-button {
+	width: 100%;
+}
+
+.register-link {
+	margin-top: 15px;
+	text-align: center;
+	font-size: 14px;
+}
+
+.register-link a {
+	color: #409EFF;
+	text-decoration: none;
+}
+</style>
