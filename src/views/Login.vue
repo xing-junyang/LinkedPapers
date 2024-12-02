@@ -20,13 +20,16 @@
 					/>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" @click="handleLogin" :loading="loading">
+					<el-button type="primary" @click="handleLogin" :loading="loading" class="custom-button">
 						登录
 					</el-button>
 				</el-form-item>
 			</el-form>
 			<div class="register-link">
 				还没有账号？<router-link to="/register">立即注册</router-link>
+			</div>
+			<div class="register-link">
+				<router-link to="/">返回首页</router-link>
 			</div>
 		</el-card>
 	</div>
@@ -105,6 +108,10 @@ const handleLogin = async () => {
 	color: #303133;
 }
 
+.el-form{
+	padding-right: 30px;
+}
+
 .el-form-item:last-child {
 	margin-bottom: 0;
 }
@@ -120,7 +127,17 @@ const handleLogin = async () => {
 }
 
 .register-link a {
-	color: #409EFF;
+	color: #2291B9;
 	text-decoration: none;
+}
+
+.custom-button{
+	background-color: #2291B9;
+	border-color: #10708f;
+}
+
+.custom-button:hover {
+	background-color: #59bad3;
+	border-color: #59bad3;
 }
 </style>
