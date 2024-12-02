@@ -1,7 +1,7 @@
 <template>
 	<div class="login-container">
 		<el-card class="login-card">
-			<h2 class="title">用户登录</h2>
+			<h2 class="title">Linked Papers 用户登录</h2>
 			<el-form
 				ref="loginFormRef"
 				:model="loginForm"
@@ -37,10 +37,10 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 import { userApi } from '@/api/user'
+import {useRouter} from "vue-router";
 
 const router = useRouter()
 
@@ -70,12 +70,12 @@ const handleLogin = async () => {
 		if (valid) {
 			loading.value = true
 			try {
-				const { data: response } = await userApi.login(loginForm)
+				const {data: response} = await userApi.login(loginForm)
 				if (response.code === 0) {
 					ElMessage.success('登录成功')
-					localStorage.setItem('token', response.data.token)
-					localStorage.setItem('userInfo', JSON.stringify(response.data.userInfo))
-					// router.push('/') // TODO: 跳转到首页
+					sessionStorage.setItem('token', response.data.token)
+					sessionStorage.setItem('userInfo', JSON.stringify(response.data.userInfo))
+					await router.push({path: '/'})
 				} else {
 					ElMessage.error(response.message)
 				}
@@ -95,7 +95,7 @@ const handleLogin = async () => {
 	justify-content: center;
 	align-items: center;
 	height: 100vh;
-	background-color: #f5f7fa;
+	background-color: #2291b9;
 }
 
 .login-card {

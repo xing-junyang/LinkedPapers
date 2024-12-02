@@ -1,27 +1,73 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import MainPage from "@/views/MainPage.vue";
-import Login from "@/views/Login.vue";
-import Register from "@/views/Register.vue";
+import {createRouter, createWebHistory} from 'vue-router'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'main',
-      component: MainPage,
-    },{
-      path: '/login',
-      name: 'login',
-      component: Login,
-      meta: {title: '登录'}
-    },{
-      path: '/register',
-      name: 'register',
-      component: Register,
-      meta: {title: '注册'}
-    },
-  ],
+    history: createWebHistory(),
+    routes: [
+        {
+            path: '/',
+            name: 'main',
+            redirect: '/search',
+            component: () => import('@/views/MainPage.vue'),
+            children: [
+                {
+                    path: '/search',
+                    name: 'search',
+                    component: () => import('@/views/PaperSearch.vue'),
+                    meta: {title: '文献检索'}
+                },
+                {
+                    path: '/paperDetail/:paperId',
+                    name: 'paperDetail',
+                    component: () => import('@/views/PaperDetail.vue'),
+                    meta: {title: '文献详情'}
+                },
+                {
+                    path: '/paperSuggest',
+                    name: 'paperSuggest',
+                    component: () => import('@/views/PaperSuggest.vue'),
+                    meta: {title: '文献推荐'}
+                },
+                {
+                    path: '/user',
+                    name: 'user',
+                    component: () => import('@/views/User.vue'),
+                    meta: {title: '用户中心'}
+                }
+            ]
+        }, {
+            path: '/login',
+            name: 'login',
+            component: () => import('@/views/Login.vue'),
+            meta: {title: '登录'}
+        }, {
+            path: '/register',
+            name: 'register',
+            component: () => import('@/views/Register.vue'),
+            meta: {title: '注册'}
+        },
+    ],
+})
+
+router.beforeEach((to, _, next) => {
+    const token: string | null = sessionStorage.getItem('token');
+
+    if (to.meta.title) {
+        document.title = "Linked Papers | "+to.meta.title
+    }
+
+    if (token) {
+        if (to.path === '/login') {
+            next('/search')
+        } else {
+            next()
+        }
+    } else {
+        if (to.path === '/login') {
+            next();
+        } else if (to.path === '/register') {
+            next()
+        }
+    }
 })
 
 export default router

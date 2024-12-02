@@ -1,7 +1,7 @@
 <template>
 	<div class="register-container">
 		<el-card class="register-card">
-			<h2 class="title">用户注册</h2>
+			<h2 class="title">Linked Papers 用户注册</h2>
 			<el-form
 				ref="registerFormRef"
 				:model="registerForm"
@@ -87,6 +87,7 @@ const handleRegister = async () => {
 				const { data: response } = await userApi.register(registerForm)
 				if (response.code === 0) {
 					ElMessage.success('注册成功')
+					await router.push('/login')
 					// TODO: router.push('/login')
 				} else {
 					ElMessage.error(response.message)
@@ -107,7 +108,7 @@ const handleRegister = async () => {
 	justify-content: center;
 	align-items: center;
 	height: 100vh;
-	background-color: #f5f7fa;
+	background-color: #2291b9;
 }
 
 .register-card {

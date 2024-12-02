@@ -1,9 +1,54 @@
 <script setup lang="ts">
 
+import {ElMessageBox} from "element-plus";
+import {useRoute, useRouter} from "vue-router";
+import {onMounted, ref, watch} from "vue";
+
+const router = useRouter()
+
+const hasLogin = ref(false)
+const userName = ref("用户")
+const isVIP = ref(false)
+
+onMounted(() => {
+	hasLogin.value = sessionStorage.getItem('token') !== '';
+	if (hasLogin.value) {
+		userName.value = JSON.parse(sessionStorage.getItem('userInfo')).username
+		isVIP.value = JSON.parse(sessionStorage.getItem('userInfo')).role === 'VIP'
+	}
+})
+
+watch(useRoute(), () => {
+	hasLogin.value = sessionStorage.getItem('token') !== '';
+	if (hasLogin.value) {
+		userName.value = JSON.parse(sessionStorage.getItem('userInfo')).username
+		isVIP.value = JSON.parse(sessionStorage.getItem('userInfo')).role === 'VIP'
+	}
+})
+
+function handleLogout() {
+	ElMessageBox.confirm(
+		'是否要退出登录？',
+		'提示',
+		{
+			customClass: "customDialog",
+			confirmButtonText: '是',
+			cancelButtonText: '否',
+			type: "warning",
+			showClose: false,
+			roundButton: true,
+			center: true
+		}
+	).then(() => {
+		sessionStorage.setItem('token', '')
+		sessionStorage.setItem('userInfo', '')
+		router.push({path: "/login"})
+	})
+}
 </script>
 
 <template>
-	<el-header class="header" height="10">
+	<el-header class="header" height="60px">
 		<el-row :gutter="10">
 			<el-col :span="4" class="header-left">
 				<router-link to="/" v-slot="{navigate}">
@@ -12,9 +57,9 @@
 					</h1>
 				</router-link>
 			</el-col>
-			<el-col :span="16">
+			<el-col :span="4">
 			</el-col>
-			<el-col :span="4" class="header-right">
+			<el-col :span="16" class="header-right" style="justify-content: end">
 				<router-link to="/login" v-slot="{navigate}" v-if="!hasLogin">
 					<button class="btn btn-login" @click="navigate">
 						<span>登录</span>
@@ -25,14 +70,26 @@
 						<span>注册</span>
 					</button>
 				</router-link>
-				<div v-if="hasLogin" class="user-info-container">
+				<div v-if="hasLogin">
 					<span class="user-info">欢迎，{{ userName }}</span>
 				</div>
-				<router-link to="/" v-slot="{navigate}" v-if="hasLogin">
-					<button v-if="hasLogin" class="btn btn-login" @click="handleLogout">
-						<span>登出</span>
+				<div v-if="isVIP">
+					<span class="user-info vip">VIP</span>
+				</div>
+
+				<router-link to="/paperSuggest" v-slot="{navigate}" v-if="hasLogin">
+					<button class="btn btn-suggest" @click="navigate">
+						<span>文献推荐</span>
 					</button>
 				</router-link>
+				<router-link to="/user" v-slot="{navigate}" v-if="hasLogin">
+					<button class="btn btn-login" @click="navigate">
+						<span>用户中心</span>
+					</button>
+				</router-link>
+				<button v-if="hasLogin" class="btn btn-login" @click="handleLogout">
+					<span>登出</span>
+				</button>
 			</el-col>
 		</el-row>
 	</el-header>
@@ -41,10 +98,11 @@
 <style scoped>
 .header {
 	background: linear-gradient(to right, #2291b9, #1798c7);
-	border-bottom-left-radius: 20px;
-	border-bottom-right-radius: 20px;
+	border-bottom-left-radius: 15px;
+	border-bottom-right-radius: 15px;
 	display: flex;
 	flex-direction: column;
+	justify-content: center;
 }
 
 .header-left {
@@ -64,13 +122,30 @@
 }
 
 .header-right {
-	display: flex !important;
+	display: flex;
 	flex-direction: row;
 	gap: 1.2rem;
 	justify-content: center;
 	align-content: center;
 	align-items: center;
+}
 
+.user-info{
+	color: #fff;
+	font-size: 1rem;
+	font-weight: 500;
+	max-width: 50px !important;
+	//overflow: scroll;
+	overflow-wrap: anywhere;
+	white-space: wrap;
+}
+
+.vip{
+	background: #ffe900;
+	padding: 0.2rem 0.6rem;
+	border-radius: 0.8rem;
+	font-weight: 1000;
+	color: goldenrod;
 }
 
 .btn {
@@ -85,6 +160,11 @@
 	overflow: hidden;
 }
 
+.btn:hover{
+	border: 2px solid #00bbff;
+	background:  #2291b9;
+}
+
 .btn-login {
 	background-color: transparent;
 	color: #fff;
@@ -92,10 +172,17 @@
 	backdrop-filter: blur(5px);
 }
 
-.btn-register {
-	background: linear-gradient(45deg, #1db954, #1ed760);
-	color: #fff;
-	box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+.btn-suggest{
+	background-color: transparent;
+	color: #ffffff;
+	border: 2px solid rgba(255, 255, 255, 0.8);
+	backdrop-filter: blur(5px);
+	font-style: italic;
 }
 
+.btn-register {
+	background: #1ed760;
+	color: #fff;
+	border: 2px solid #12d956;
+}
 </style>
