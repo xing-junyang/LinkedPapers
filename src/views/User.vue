@@ -17,9 +17,6 @@
 					<template #header>
 						<div class="card-header">
 							<span>基础信息</span>
-							<el-button type="primary" plain size="small">
-								编辑资料
-							</el-button>
 						</div>
 					</template>
 					<el-descriptions :column="1" border v-model="userStore">
@@ -127,6 +124,7 @@ import {GoldMedal} from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 
 const userStore = ref({
+  userId: '',
 	username: '',
 	email: '',
 	registerTime: '',
@@ -152,9 +150,12 @@ const formatDate = (date: string | undefined) => {
 	return dayjs(date).format('YYYY-MM-DD HH:mm')
 }
 
-const loadUserStore = () => {
+const loadUserStore = async () => {
 	//TODO: 从后端获取真实用户信息
+  const userInfo = await userApi.getUserInfo()
+  console.log(userInfo)
 	userStore.value = {
+    userId: '1',
 		username: 'admin',
 		email: 'example@user.com',
 		registerTime: '2021-01-01 00:00:00',
@@ -162,9 +163,11 @@ const loadUserStore = () => {
 		vipExpireTime: '2024-12-31',
 		role: 'NORMAL'
 	}
+  userStore.value = userInfo.data.data
 	isVip.value = userStore.value.role === 'VIP'
 	vipExpireTime.value = userStore.value.vipExpireTime
 	//TODO: 更新 SessionStorage 中的用户 VIP 信息
+  sessionStorage.setItem('userInfo', JSON.stringify(userInfo.data.data))
 }
 
 const loadHistory = async () => {
@@ -197,11 +200,11 @@ const handleCurrentChange = (val: number) => {
 
 const handleUpgradeVip = async () => {
 	try {
-		const { data: response } = await userApi.updateRole(userStore.userId, 'VIP')
+		const { data: response } = await userApi.updateRole(userStore.value.userId, 'VIP')
 		if (response.code === 0) {
 			ElMessage.success('开通成功，获得一个月 VIP')
 			isVip.value = true
-			userStore.setRole('VIP')
+			userStore.value.role = 'VIP'
 		}
 	} catch (error) {
 		ElMessage.error('开通失败，请稍后重试')

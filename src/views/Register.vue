@@ -85,6 +85,7 @@ const handleRegister = async () => {
 			loading.value = true
 			try {
 				const { data: response } = await userApi.register(registerForm)
+        // console.log(response)
 				if (response.code === 0) {
 					ElMessage.success('注册成功')
 					await router.push('/login')

@@ -19,15 +19,6 @@ interface ApiResponse<T> {
     data: T
 }
 
-interface LoginResponseData {
-    token: string
-    userInfo: {
-        userId: string
-        username: string
-        role: UserRole
-    }
-}
-
 interface RegisterResponseData {
     userId: string
     username: string
@@ -52,24 +43,40 @@ interface UpdateRoleResponse {
     message: string
 }
 
+export interface UserInfo {
+    userId: string
+    username: string
+    email: string
+    role: UserRole
+    registerTime: string
+    lastLoginTime: string
+    vipExpireTime: string
+}
+
 export const userApi = {
     // 登录
     login(data: LoginForm) {
-        return axios.post<ApiResponse<LoginResponseData>>('/api/auth/login', data)
+        return axios.post<ApiResponse<string>>('/api/users/login', null, {params: {email: data.email, password: data.password}})
     },
 
     // 注册
     register(data: RegisterForm) {
-        return axios.post<ApiResponse<RegisterResponseData>>('/api/auth/register', data)
+        return axios.post<ApiResponse<RegisterResponseData>>('/api/users/register', data)
+    },
+
+    // 获取用户信息
+    getUserInfo() {
+        return axios.get<ApiResponse<UserInfo>>('/api/users/getUserInfo', { headers: { token: sessionStorage.getItem('token') } })
     },
 
     // 获取浏览历史
     getHistory(params: { page: number; size: number }) {
-        return axios.get<HistoryResponse>('/api/user/history', { headers: { token: sessionStorage.getItem('token') ,}, params: params })
+        return axios.get<HistoryResponse>('/api/users/getUserHistory', { headers: { token: sessionStorage.getItem('token') ,}, params: params })
     },
 
     // 更新用户角色
     updateRole(userId: string, role: UserRole) {
-        return axios.put<UpdateRoleResponse>(`/api/admin/users/${userId}/role`, { role }, { headers: { token: sessionStorage.getItem('token') } })
+        console.log(userId, role)
+        return axios.get<UpdateRoleResponse>(`/api/users/updateUserRole`, { headers: { token: sessionStorage.getItem('token') }, params: { userId: Number(userId), role: role } })
     }
 }

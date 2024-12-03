@@ -71,16 +71,19 @@ const handleLogin = async () => {
 			loading.value = true
 			try {
 				const {data: response} = await userApi.login(loginForm)
+        console.log(response)
 				if (response.code === 0) {
 					ElMessage.success('登录成功')
-					sessionStorage.setItem('token', response.data.token)
-					sessionStorage.setItem('userInfo', JSON.stringify(response.data.userInfo))
+					sessionStorage.setItem('token', response.data)
+          const userInfo = await userApi.getUserInfo()
+          sessionStorage.setItem('userInfo', JSON.stringify(userInfo.data.data))
+					// sessionStorage.setItem('userInfo', JSON.stringify(response.data.userInfo))
 					await router.push({path: '/'})
 				} else {
 					ElMessage.error(response.message)
 				}
 			} catch (error) {
-				ElMessage.error('登录失败，请稍后重试')
+				ElMessage.error('登录出错')
 			} finally {
 				loading.value = false
 			}
