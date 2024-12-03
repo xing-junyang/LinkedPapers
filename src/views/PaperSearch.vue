@@ -41,8 +41,8 @@
 					<el-col :span="6">
 						<el-form-item label="排序方式">
 							<el-select v-model="searchForm.sortBy" style="width: 100%">
-								<el-option label="相关度" value="relevance" />
-								<el-option label="发表年份" value="year" />
+								<el-option label="A-Z" value="RELEVANCE" />
+								<el-option label="发表年份" value="NEWEST" />
 							</el-select>
 						</el-form-item>
 					</el-col>
@@ -50,9 +50,46 @@
 						<el-form-item label="论文类别">
 							<el-select v-model="searchForm.category" clearable style="width: 100%">
 								<el-option label="全部类别" value="" />
-								<el-option label="计算机科学" value="CS" />
-								<el-option label="人工智能" value="AI" />
-								<el-option label="机器学习" value="ML" />
+                <el-option label="cs.CR" value="cs.CR" />
+                <el-option label="cs.DC" value="cs.DC" />
+                <el-option label="cs.IT" value="cs.IT" />
+                <el-option label="cs.NI" value="cs.NI" />
+                <el-option label="cs.RO" value="cs.RO" />
+                <el-option label="cs.DS" value="cs.DS" />
+                <el-option label="cs.HC" value="cs.HC" />
+                <el-option label="cs.CY" value="cs.CY" />
+                <el-option label="cs.LG" value="cs.LG" />
+                <el-option label="cs.GT" value="cs.GT" />
+                <el-option label="cs.PL" value="cs.PL" />
+                <el-option label="cs.CV" value="cs.CV" />
+                <el-option label="cs.FL" value="cs.FL" />
+                <el-option label="cs.SI" value="cs.SI" />
+                <el-option label="cs.SY" value="cs.SY" />
+                <el-option label="cs.SC" value="cs.SC" />
+                <el-option label="cs.AI" value="cs.AI" />
+                <el-option label="cs.NA" value="cs.NA" />
+                <el-option label="cs.CG" value="cs.CG" />
+                <el-option label="cs.LO" value="cs.LO" />
+                <el-option label="cs.ET" value="cs.ET" />
+                <el-option label="cs.DL" value="cs.DL" />
+                <el-option label="cs.IR" value="cs.IR" />
+                <el-option label="cs.CC" value="cs.CC" />
+                <el-option label="cs.DM" value="cs.DM" />
+                <el-option label="cs.NE" value="cs.NE" />
+                <el-option label="cs.SE" value="cs.SE" />
+                <el-option label="cs.MA" value="cs.MA" />
+                <el-option label="cs.PF" value="cs.PF" />
+                <el-option label="cs.MS" value="cs.MS" />
+                <el-option label="cs.MM" value="cs.MM" />
+                <el-option label="cs.OH" value="cs.OH" />
+                <el-option label="cs.CL" value="cs.CL" />
+                <el-option label="cs.CE" value="cs.CE" />
+                <el-option label="cs.DB" value="cs.DB" />
+                <el-option label="cs.SD" value="cs.SD" />
+                <el-option label="cs.AR" value="cs.AR" />
+                <el-option label="cs.GR" value="cs.GR" />
+                <el-option label="cs.OS" value="cs.OS" />
+                <el-option label="cs.GL" value="cs.GL" />
 							</el-select>
 						</el-form-item>
 					</el-col>
@@ -75,7 +112,7 @@
 		</el-card>
 
 		<!-- 搜索结果列表 -->
-		<el-card v-if="papers.length > 0" class="result-card">
+		<el-card v-if="total > 0" class="result-card">
 			<div class="search-stats">
 				找到 {{ total }} 条结果
 			</div>
@@ -93,7 +130,7 @@
 					<div class="paper-info">
 						<el-tag size="small">{{ paper.category }}</el-tag>
 						<span class="year">{{ paper.year }}年</span>
-						<span class="citations">被引用 {{ paper.citationCount }} 次</span>
+						<span class="citations">引用文章数 {{ paper.citations.citationCount }}</span>
 					</div>
 					<div class="paper-abstract">{{ paper.abstract }}</div>
 				</div>
@@ -138,7 +175,7 @@ const searchForm = reactive<SearchParams>({
 	keywords: '',
 	page: 1,
 	size: 10,
-	sortBy: 'relevance',
+	sortBy: 'RELEVANCE',
 	category: '',
 	yearStart: undefined,
 	yearEnd: undefined
@@ -171,48 +208,49 @@ const handleSearch = async () => {
 	loading.value = true
 	try {
 		const { data: response } = await paperApi.search(searchForm)
+    console.log(response)
 		if (response.code === 0) {
-			papers.value = response.data.papers
-			total.value = response.data.total
+			papers.value = response.data
+			total.value = papers.value.length
 			hasSearched.value = true
 		} else {
 			ElMessage.error('搜索失败，请重试')
 		}
 	} catch (error) {
-		ElMessage.error('搜索出错，请稍后重试')
+		ElMessage.error('搜索出错，请稍后重试' + error)
 	} finally {
 		loading.value = false
 	}
 
 	//TODO: the following is the Mock data, which should be replaced after the backend is implemented.
-	hasSearched.value = true
-	papers.value = [
-		{
-			paperId: '1',
-			title: '论文标题1',
-			year: '2021',
-			category: '计算机科学',
-			abstract: '论文摘要1',
-			citationCount: 10
-		},
-		{
-			paperId: '2',
-			title: '论文标题2',
-			year: '2020',
-			category: '人工智能',
-			abstract: '论文摘要2',
-			citationCount: 20
-		},
-		{
-			paperId: '3',
-			title: '论文标题3',
-			year: '2019',
-			category: '机器学习',
-			abstract: '论文摘要3',
-			citationCount: 30
-		}
-	]
-	total.value = 3
+	// hasSearched.value = true
+	// papers.value = [
+	// 	{
+	// 		paperId: '1',
+	// 		title: '论文标题1',
+	// 		year: '2021',
+	// 		category: '计算机科学',
+	// 		abstract: '论文摘要1',
+	// 		citationCount: 10
+	// 	},
+	// 	{
+	// 		paperId: '2',
+	// 		title: '论文标题2',
+	// 		year: '2020',
+	// 		category: '人工智能',
+	// 		abstract: '论文摘要2',
+	// 		citationCount: 20
+	// 	},
+	// 	{
+	// 		paperId: '3',
+	// 		title: '论文标题3',
+	// 		year: '2019',
+	// 		category: '机器学习',
+	// 		abstract: '论文摘要3',
+	// 		citationCount: 30
+	// 	}
+	// ]
+	// total.value = 3
 }
 
 const handleSizeChange = (size: number) => {

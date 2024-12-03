@@ -4,27 +4,28 @@ export interface SearchParams {
     keywords: string
     page: number
     size: number
-    sortBy: 'relevance' | 'year'
+    sortBy: 'RELEVANCE' | 'NEWEST'
     category?: string
     yearStart?: number
     yearEnd?: number
 }
 
+interface Citation {
+    citationCount: number
+}
+
 export interface Paper {
     paperId: string
     title: string
-    abstract: string
-    year: number
+    abstractText: string
+    year: string
     category: string
-    citationCount: number
+    citations: Citation
 }
 
 interface SearchResponse {
     code: number
-    data: {
-        total: number
-        papers: Paper[]
-    }
+    data: Paper[]
 }
 
 export interface RecommendedPaper {
@@ -47,10 +48,9 @@ export interface PaperDetail {
     data: {
         paperId: string
         title: string
-        abstract: string
+        abstractText: string
         year: number
         category: string
-        vector: number[]
         citations: [
             {
                 paperId: string
@@ -77,7 +77,7 @@ export interface PaperDetail {
 export const paperApi = {
     // 搜索论文
     search(params: SearchParams) {
-        return axios.get<SearchResponse>('/api/papers/search', { params })
+        return axios.post<SearchResponse>('/api/papers/search', params)
     },
 
     // 获取推荐论文
@@ -87,6 +87,6 @@ export const paperApi = {
 
     // 获取论文详情
     getPaperDetail(paperId: string) {
-        return axios.get<PaperDetail>(`/api/papers/${paperId}`)
+        return axios.get<PaperDetail>(`/api/papers/${paperId}` ,{headers: {token: sessionStorage.getItem('token')}})
     }
 }
