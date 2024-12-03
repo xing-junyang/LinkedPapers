@@ -11,12 +11,12 @@
 
 			<div class="abstract">
 				<div class="section-title">摘要</div>
-				<p>{{ paperInfo?.abstract }}</p>
+				<p>{{ paperInfo?.abstractText }}</p>
 			</div>
 
 			<div class="citations">
 				<div class="section-title">引用论文</div>
-				<el-table :data="paperInfo?.citations" style="width: 100%">
+				<el-table :data="paperInfo?.citations.citations" style="width: 100%">
 					<el-table-column prop="title" label="标题">
 						<template #default="scope">
 							<router-link :to="`/paperDetail/${scope.row.paperId}`">
@@ -36,7 +36,7 @@
 				</template>
 
 				<template v-if="paperInfo?.similarPapers">
-					<el-table :data="paperInfo.similarPapers" style="width: 100%">
+					<el-table :data="paperInfo.similarPapers.similarPapers" style="width: 100%">
 						<el-table-column prop="title" label="标题">
 							<template #default="scope">
 								<router-link :to="`/paperDetail/${scope.row.paperId}`">

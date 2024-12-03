@@ -31,7 +31,7 @@ interface SearchResponse {
 export interface RecommendedPaper {
     paperId: string
     title: string
-    abstract: string
+    abstractText: string
     reason: string
     similarity: number
 }
@@ -43,6 +43,22 @@ interface RecommendationResponse {
     }
 }
 
+export interface CitationPaper{
+    paperId: string
+    title: string
+}
+
+export interface SimilarPaper{
+    paperId: string
+    title: string
+    similarity: number
+}
+
+export interface SameCategoryPaper{
+    paperId: string
+    title: string
+}
+
 export interface PaperDetail {
     code: number
     data: {
@@ -51,26 +67,16 @@ export interface PaperDetail {
         abstractText: string
         year: number
         category: string
-        citations: [
-            {
-                paperId: string
-                title: string
-                year: number
-            }
-        ]
-        similarPapers?: [
-            {
-                paperId: string
-                title: string
-                similarity: number
-            }
-        ]
-        sameCategoryPapers?: [
-            {
-                paperId: string
-                title: string
-            }
-        ]
+        citations: {
+            citationCount: number
+            citations: CitationPaper[]
+            year: string
+        }
+        similarPapers?:{
+            paperId: string
+            similarPapers: SimilarPaper[]
+        }
+        sameCategoryPapers?: SameCategoryPaper[]
     }
 }
 
@@ -82,7 +88,7 @@ export const paperApi = {
 
     // 获取推荐论文
     getRecommendations() {
-        return axios.get<RecommendationResponse>('/api/user/recommendations',{headers: {token: sessionStorage.getItem('token')}})
+        return axios.get<RecommendationResponse>('/api/recommendations/get',{headers: {token: sessionStorage.getItem('token')}})
     },
 
     // 获取论文详情

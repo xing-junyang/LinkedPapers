@@ -173,13 +173,15 @@ const loadUserStore = async () => {
 const loadHistory = async () => {
 	loading.value = true
 	try {
+    console.log(userStore.value.userId)
 		const { data: response } = await userApi.getHistory({
-			page: currentPage.value,
-			size: pageSize.value
+			userId: userStore.value.userId
 		})
+    console.log("History: ")
+    console.log(response)
 		if (response.code === 0) {
-			historyList.value = response.data.history
-			total.value = response.data.total
+			historyList.value = response.data
+			total.value = historyList.value.length
 		}
 	} catch (error) {
 		ElMessage.error('获取浏览历史失败')
@@ -211,9 +213,9 @@ const handleUpgradeVip = async () => {
 	}
 }
 
-onMounted(() => {
-	loadHistory()
-	loadUserStore()
+onMounted(async () => {
+	await loadUserStore()
+  await loadHistory()
 })
 </script>
 

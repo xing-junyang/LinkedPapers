@@ -70,8 +70,9 @@ export const userApi = {
     },
 
     // 获取浏览历史
-    getHistory(params: { page: number; size: number }) {
-        return axios.get<HistoryResponse>('/api/users/getUserHistory', { headers: { token: sessionStorage.getItem('token') ,}, params: params })
+    getHistory(userId: string) {
+        console.log(userId)
+        return axios.get<HistoryResponse>('/api/users/getUserHistory', { headers: { token: sessionStorage.getItem('token')}, params: userId })
     },
 
     // 更新用户角色

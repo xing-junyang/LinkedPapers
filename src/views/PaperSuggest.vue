@@ -78,6 +78,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Refresh, InfoFilled } from '@element-plus/icons-vue'
 import { paperApi, type RecommendedPaper } from '@/api/paper'
+import { userApi } from '@/api/user'
 
 const router = useRouter()
 const loading = ref(false)
@@ -94,76 +95,22 @@ const getSimilarityColor = (percentage: number) => {
 const loadRecommendations = async () => {
 	loading.value = true
 	try {
-		const { data: response } = await paperApi.getRecommendations()
-		if (response.code === 0) {
-			recommendations.value = response.data.recommendations
-		} else {
-			ElMessage.error('获取推荐失败')
-		}
+    const userInfo = await userApi.getUserInfo()
+    console.log("UserID", userInfo.data.data.userId)
+		const { data: response } = await paperApi.getRecommendations(userInfo.data.data.userId)
+    // console.log("response")
+    // console.log(response)
+		// if (response.code === 0) {
+		// 	recommendations.value = response.data.recommendations
+		// } else {
+		// 	ElMessage.error('获取推荐失败', error)
+		// }
 	} catch (error) {
-		ElMessage.error('获取推荐出错，请稍后重试')
+		ElMessage.error('获取推荐出错，请稍后重试', error)
 	} finally {
 		loading.value = false
 	}
 	//TODO: the following is the Mock data, which should be replaced after the backend is implemented.
-	recommendations.value = [
-		{
-			paperId: '1',
-			title: '论文标题1',
-			abstract: '论文摘要1',
-			similarity: 0.8,
-			reason: '推荐理由1'
-		},
-		{
-			paperId: '2',
-			title: '论文标题2',
-			abstract: '论文摘要2',
-			similarity: 0.7,
-			reason: '推荐理由2'
-		},
-		{
-			paperId: '3',
-			title: '论文标题3',
-			abstract: '论文摘要3',
-			similarity: 0.6,
-			reason: '推荐理由3'
-		},
-		{
-			paperId: '4',
-			title: '论文标题4',
-			abstract: '论文摘要4',
-			similarity: 0.5,
-			reason: '推荐理由4'
-		},
-		{
-			paperId: '5',
-			title: '论文标题5',
-			abstract: '论文摘要5',
-			similarity: 0.4,
-			reason: '推荐理由5'
-		},
-		{
-			paperId: '6',
-			title: '论文标题6',
-			abstract: '论文摘要6',
-			similarity: 0.3,
-			reason: '推荐理由6'
-		},
-		{
-			paperId: '7',
-			title: '论文标题7',
-			abstract: '论文摘要7',
-			similarity: 0.2,
-			reason: '推荐理由7'
-		},
-		{
-			paperId: '8',
-			title: '论文标题8',
-			abstract: '论文摘要8',
-			similarity: 0.1,
-			reason: '推荐理由8'
-		}
-	]
 }
 
 const refreshRecommendations = () => {
